@@ -1,0 +1,5 @@
+{
+  "name": "Webpack Dev Server",
+  "value": "webpackdev",
+  "type": "devserver"
+}

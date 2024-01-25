@@ -1,0 +1,5 @@
+{
+  "name": "BrowerSync",
+  "value": "browsersync",
+  "type": "devserver"
+}

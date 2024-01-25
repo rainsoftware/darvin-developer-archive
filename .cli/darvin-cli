@@ -1,0 +1,112 @@
+#!/usr/bin/env node
+
+const chalk = require('chalk');
+const rl = require('readline');
+const low = require('lowdb');
+let Table = require('terminal-table');
+
+const FileSync = require('lowdb/adapters/FileSync');
+
+const { _init } = require('./src/init');
+const { _add } = require('./src/add');
+const { _clean } = require('./src/clean');
+
+const adapter = new FileSync('./config/.darvinrc.modern.json');
+const db = low(adapter);
+const args = process.argv;
+
+// usage represents the help guide
+const _usage = function() {
+  const usageText = `
+  usage:
+    darvin-cli <command>
+
+    commands can be:
+
+    init:     init boilerplate
+    add:      scaffold new elements
+    list:     show active settings
+  `;
+
+  // tslint:disable-next-line: no-console
+  console.log(usageText);
+};
+
+// used to log errors to the console in red color
+const errorLog = (error) => {
+  const eLog = chalk.red(error);
+  // tslint:disable-next-line: no-console
+  console.log(eLog);
+};
+
+// we make sure the length of the arguments is exactly three
+if (args.length > 3 && args[2] != 'complete') {
+  errorLog('only one argument can be accepted');
+  _usage();
+  return;
+}
+
+const prompt = (question) => {
+  const r = rl.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+  });
+  return new Promise((resolve, error) => {
+    r.question(question, answer => {
+      r.close();
+      resolve(answer);
+    });
+  });
+},
+_get = () => {
+  const settings = db.get('settings').value();
+  let t = new Table({
+    borderStyle: 0,
+    border: {
+      sep: '║',
+      topLeft: '╔', topMid: '╦', top: '═', topRight: '╗',
+      midLeft: '╠', midMid: '╬', mid: '═', midRight: '╣',
+      botLeft: '╚', botMid: '╩', bot: '═', botRight: '╝'
+    }
+  });
+
+  t.push(
+    ['   ', 'Category', 'Value']
+  );
+
+  t.attr(0, 1, { 'color': 'black', 'bg': 'white' });
+  t.attr(0, 2, { 'color': 'black', 'bg': 'white' });
+
+  Object.keys(settings).forEach(key => {
+    const value = settings[key];
+    t.push(
+      [' ✔ ',key, value]
+    );
+  });
+
+  // tslint:disable-next-line: no-console
+  console.log('' + t);
+  return;
+};
+
+switch(args[2]) {
+  case 'help':
+    _usage();
+    break;
+  case 'list':
+    _get();
+    break;
+  case 'init':
+    _init();
+    break;
+  case 'add':
+    _add();
+    break;
+  case 'clean':
+    _clean();
+    break;
+  default:
+    errorLog('invalid command passed');
+    _usage();
+}

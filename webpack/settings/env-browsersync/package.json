@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "cross-env NODE_ENV=dev SCRIPT_ENV=modern DARVIN_ENV=darvinrc.modern DARVIN_CONF=darvinconf.dev webpack --mode development --watch --config webpack/webpack.config.dev.js"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.5",
+    "browser-sync-webpack-plugin": "^2.3.0"
+  }
+}
+
+
+
